@@ -1,0 +1,1058 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Birthday!</title>
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,800;1,600&family=Nunito:wght@400;600;700&display=swap">
+
+<style>
+:root{
+  --bg1:#f3e6ff;
+  --bg2:#ffd9e6;
+  --ink:#3b1f4a;
+  --muted:#6d4f7d;
+  --rose:#ff6fa0;
+  --gold:#f5b942;
+  --card:rgba(255,255,255,.75);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  height:100%;
+  margin:0;
+}
+
+body{
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  font-family:Nunito,system-ui,sans-serif;
+  line-height:1.55;
+  overflow:hidden;
+}
+
+h1,h2{
+  font-family:Fraunces,Georgia,serif;
+  margin:0;
+  line-height:1.08;
+}
+
+.page{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:60px 22px 90px;
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(18px);
+  transition:opacity .7s,transform .7s,visibility .7s;
+  overflow-y:auto;
+}
+
+.page.on{
+  opacity:1;
+  visibility:visible;
+  transform:none;
+}
+
+.wrap{
+  max-width:560px;
+  width:100%;
+}
+
+.small{
+  color:var(--muted);
+  font-size:1.05rem;
+}
+
+.big{
+  font-size:clamp(3.5rem,18vw,7rem);
+  font-weight:800;
+  color:var(--rose);
+  margin:10px 0;
+  word-break:break-word;
+  line-height:1.1;
+}
+
+h2{
+  font-size:clamp(2rem,9vw,3rem);
+  margin-bottom:18px;
+}
+
+input{
+  font:inherit;
+  text-align:center;
+  font-size:1.1rem;
+  padding:11px 16px;
+  border-radius:999px;
+  border:2px solid var(--rose);
+  background:var(--card);
+  color:var(--ink);
+  width:min(280px,100%);
+}
+
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:19px 21px;
+  margin:14px 0;
+  text-align:left;
+  backdrop-filter:blur(7px);
+  box-shadow:0 8px 25px rgba(70,30,80,.08);
+}
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin:14px 0;
+}
+
+.chips span{
+  background:var(--rose);
+  color:#fff;
+  padding:6px 14px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:.95rem;
+}
+
+.chips span:nth-child(even){
+  background:var(--gold);
+  color:#3b1f4a;
+}
+
+button{
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+  border:0;
+  border-radius:999px;
+  padding:13px 28px;
+  background:var(--rose);
+  color:#fff;
+  margin-top:14px;
+  box-shadow:0 6px 18px rgba(255,111,160,.25);
+  transition:transform .2s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+}
+
+button.ghost{
+  background:transparent;
+  color:var(--ink);
+  border:2px solid var(--rose);
+}
+
+button:focus-visible,
+input:focus-visible{
+  outline:3px solid var(--gold);
+  outline-offset:3px;
+}
+
+/* Bottom navigation */
+nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));
+  z-index:8;
+}
+
+nav button{
+  margin:0;
+  padding:10px 25px;
+}
+
+#next{
+  display:none;
+}
+
+#mute{
+  position:fixed;
+  top:calc(12px + env(safe-area-inset-top,0px));
+  right:14px;
+  z-index:20;
+  margin:0;
+  padding:8px 14px;
+  font-size:.9rem;
+}
+
+#warning-msg{
+  color:#d9534f;
+  font-weight:600;
+  margin-top:10px;
+  min-height:1.5em;
+  font-size:.95rem;
+}
+
+#quote{
+  min-height:3.2em;
+  font-family:Fraunces,Georgia,serif;
+  font-style:italic;
+  font-size:1.35rem;
+  text-align:center;
+}
+
+/* Birthday blast overlay */
+#birthdayBlast{
+  position:fixed;
+  inset:0;
+  z-index:15;
+  pointer-events:none;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+
+.blastMessage{
+  font-family:Fraunces,Georgia,serif;
+  font-size:clamp(2rem,9vw,4.5rem);
+  font-weight:800;
+  color:var(--rose);
+  text-shadow:0 5px 20px rgba(0,0,0,.12);
+  opacity:0;
+  transform:scale(.2);
+}
+
+.blastMessage.show{
+  animation:blastText 2.2s ease forwards;
+}
+
+@keyframes blastText{
+  0%{opacity:0;transform:scale(.2) rotate(-8deg)}
+  25%{opacity:1;transform:scale(1.15) rotate(3deg)}
+  45%{transform:scale(1) rotate(0)}
+  100%{opacity:0;transform:scale(1.05)}
+}
+
+.blastItem{
+  position:absolute;
+  font-size:30px;
+  animation:blastFly 2.8s ease-out forwards;
+}
+
+@keyframes blastFly{
+  0%{
+    opacity:1;
+    transform:translate(0,0) scale(.3) rotate(0deg);
+  }
+  100%{
+    opacity:0;
+    transform:
+      translate(var(--x),var(--y))
+      scale(1.3)
+      rotate(var(--r));
+  }
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:5;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .page{transition:none}
+  .blastItem,.blastMessage{animation:none!important}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="c" aria-hidden="true"></canvas>
+
+<button id="mute" class="ghost" aria-label="Toggle music">
+  Music: off
+</button>
+
+<div id="birthdayBlast" aria-hidden="true">
+  <div class="blastMessage" id="blastMessage">
+    🎉 Happy Birthday! 🎂
+  </div>
+</div>
+
+
+<!-- PAGE 1 -->
+<section class="page on" id="p0">
+  <div class="wrap">
+
+    <p class="small">A little something special for you 🎁✨</p>
+
+    <div class="big">
+      Happy Birthday! 🎉🎂
+    </div>
+
+    <p class="small" style="margin-top:20px;">
+      Type your name here ✍️💖
+    </p>
+
+    <input
+      id="nm"
+      placeholder="Your name"
+      maxlength="20"
+      autocomplete="off"
+    >
+
+    <div id="warning-msg"></div>
+
+    <br>
+
+    <button id="start">
+      Open your wishes 🎁✨
+    </button>
+
+  </div>
+</section>
+
+
+<!-- PAGE 2 -->
+<section class="page" id="p1">
+  <div class="wrap">
+
+    <h2>
+      🎉 Happy Birthday,
+      <span class="nm2">dear friend</span>! 🎂💖
+    </h2>
+
+    <p>
+      Today is all about you! 🥳✨
+      I hope your day is filled with endless laughter 😂,
+      delicious food 🍰🍕 and people who make your heart smile 💕.
+    </p>
+
+    <p>
+      May your birthday bring you beautiful memories 📸,
+      unexpected happiness 🎁 and plenty of reasons to smile all year long 😊🌸.
+    </p>
+
+    <div class="chips">
+      <span>Kind 💖</span>
+      <span>Funny 😂</span>
+      <span>Loyal 🤝</span>
+      <span>Real ✨</span>
+      <span>Strong 💪</span>
+      <span>Caring 🫶</span>
+    </div>
+
+    <div class="card">
+      <b>🎁 Best wishes:</b><br><br>
+
+      May every dream you quietly carry in your heart
+      slowly become your reality 🌟.
+      May you always find the courage to chase what you want
+      and the patience to wait for what is truly meant for you 🌸✨.
+
+      <br><br>
+
+      I wish you lots of happiness 😊,
+      good health 🌷,
+      success in everything you do 🏆,
+      peaceful days ☀️,
+      unforgettable memories 📸
+      and many beautiful surprises along the way 🎁💫.
+
+      <br><br>
+
+      May this new year of your life be even better than
+      the one before it 🎂🥳.
+    </div>
+
+    <div class="card">
+      <b>😂💖 Our bond:</b><br><br>
+
+      We met on social media 📱,
+      and somehow a random screen turned into a real friendship 🤝✨.
+
+      We may not talk every single day,
+      but somehow the friendship survives the disappearing acts 😂👻.
+
+      And honestly, that's one of the things I like about our bond —
+      no pressure, no fake formality, just being ourselves 😄💖.
+
+      Sometimes we talk a lot,
+      sometimes we disappear like we're both undercover agents 🕵️‍♂️😂,
+      but whenever we talk again,
+      it feels completely normal.
+
+      <br><br>
+
+      Some friendships don't need daily conversations
+      to prove that they matter ❤️✨.
+      Ours is one of those friendships,
+      and I'm genuinely glad we became friends 🫶🎉.
+    </div>
+
+  </div>
+</section>
+
+
+<!-- PAGE 3 -->
+<section class="page" id="p2">
+  <div class="wrap">
+
+    <h2>
+      🎂 Happy Birthday Again,
+      <span class="nm2">dear friend</span>! 🎉💖
+    </h2>
+
+    <p>
+      Thank you for being you. 💕<br>
+      This world is better with you in it. 🌎✨<br>
+      Never forget how special and valuable you are. 🫶🌸
+    </p>
+
+    <div class="card">
+      <div id="quote">
+        Believe in yourself. You are stronger than you think. 💪✨
+      </div>
+    </div>
+
+    <button id="more">
+      Another line ✨
+    </button>
+
+    <p class="small" style="margin-top:22px;">
+      With love, your friend 💖🫶
+    </p>
+
+    <button id="restart">
+      🔄 Start Again
+    </button>
+
+  </div>
+</section>
+
+
+<nav>
+  <button id="next">
+    Next ➡️
+  </button>
+</nav>
+
+
+<script>
+(function(){
+
+/* =========================
+   PAGE SYSTEM
+========================= */
+
+var cur=0;
+var pages=[].slice.call(document.querySelectorAll('.page'));
+
+var nm=document.getElementById('nm');
+var warningMsg=document.getElementById('warning-msg');
+var muteBtn=document.getElementById('mute');
+
+function setName(){
+
+  var v=nm.value.trim();
+
+  [].forEach.call(
+    document.querySelectorAll('.nm2'),
+    function(e){
+      e.textContent=v || 'dear friend';
+    }
+  );
+
+  document.title='Happy Birthday'+(v?', '+v:'')+'!';
+
+  if(v){
+    warningMsg.textContent='';
+  }
+}
+
+nm.addEventListener('input',setName);
+
+
+function go(i){
+
+  if(cur===0 && i===1 && !nm.value.trim()){
+
+    warningMsg.textContent=
+      "Please enter your name first 🎁✨";
+
+    nm.focus();
+    return;
+  }
+
+  cur=Math.max(0,Math.min(2,i));
+
+  pages.forEach(function(p,k){
+    p.classList.toggle('on',k===cur);
+  });
+
+  /* Page 2 birthday blast */
+  if(cur===1){
+    birthdayBlast();
+  }
+
+  /* Next button only appears on Page 2 */
+  document.getElementById('next').style.display=
+    cur===1 ? 'block' : 'none';
+}
+
+
+/* Open wishes */
+document.getElementById('start').onclick=function(){
+
+  startMusic();
+
+  go(1);
+};
+
+
+/* Next button */
+document.getElementById('next').onclick=function(){
+  go(cur+1);
+};
+
+
+/* =========================
+   START AGAIN
+========================= */
+
+document.getElementById('restart').onclick=function(){
+
+  nm.value='';
+  setName();
+
+  cur=0;
+
+  pages.forEach(function(p,k){
+    p.classList.toggle('on',k===0);
+  });
+
+  document.getElementById('next').style.display='none';
+
+  window.scrollTo(0,0);
+};
+
+
+/* =========================
+   MUSIC
+========================= */
+
+var ac=null;
+var master=null;
+var on=false;
+var timer=null;
+
+var F={
+  G4:392,
+  A4:440,
+  B4:493.88,
+  C5:523.25,
+  D5:587.33,
+  E5:659.25,
+  F5:698.46,
+  G5:783.99
+};
+
+
+/* Fun & cheerful melody */
+var L=[
+  [
+    ['G4',.5],
+    ['G4',.5],
+    ['A4',.7],
+    ['G4',.7],
+    ['C5',.7],
+    ['B4',1]
+  ],
+  [
+    ['G4',.5],
+    ['G4',.5],
+    ['A4',.7],
+    ['G4',.7],
+    ['D5',.7],
+    ['C5',1]
+  ],
+  [
+    ['G4',.5],
+    ['G4',.5],
+    ['G5',.7],
+    ['E5',.7],
+    ['C5',.7],
+    ['B4',.7],
+    ['A4',1]
+  ],
+  [
+    ['F5',.5],
+    ['F5',.5],
+    ['E5',.7],
+    ['C5',.7],
+    ['D5',.7],
+    ['C5',1]
+  ]
+];
+
+
+function initAudioContext(){
+
+  if(ac) return;
+
+  var C=
+    window.AudioContext ||
+    window.webkitAudioContext;
+
+  if(!C) return;
+
+  ac=new C();
+
+  var lp=ac.createBiquadFilter();
+
+  lp.type='lowpass';
+  lp.frequency.value=2200;
+
+  master=ac.createGain();
+  master.gain.value=.35;
+
+  master.connect(lp);
+  lp.connect(ac.destination);
+}
+
+
+function play(){
+
+  if(!on || !ac) return;
+
+  var beat=.55;
+  var t=ac.currentTime+.05;
+
+  L.forEach(function(line){
+
+    line.forEach(function(n){
+
+      var d=n[1]*beat;
+      var f=F[n[0]];
+
+      /*
+        Two oscillators give the music
+        a brighter, cheerful sound.
+      */
+
+      [
+        [f,.10,'sine'],
+        [f*2,.035,'triangle']
+      ].forEach(function(o){
+
+        var os=ac.createOscillator();
+        var g=ac.createGain();
+
+        os.type=o[2];
+        os.frequency.value=o[0];
+
+        g.gain.setValueAtTime(0,t);
+
+        g.gain.linearRampToValueAtTime(
+          o[1],
+          t+.05
+        );
+
+        g.gain.exponentialRampToValueAtTime(
+          .001,
+          t+d+.35
+        );
+
+        os.connect(g);
+        g.connect(master);
+
+        os.start(t);
+        os.stop(t+d+.4);
+      });
+
+      t+=d;
+    });
+
+    t+=beat*.45;
+  });
+
+
+  timer=setTimeout(
+    function(){
+      if(on) play();
+    },
+    Math.max(100,(t-ac.currentTime)*1000)
+  );
+}
+
+
+function startMusic(){
+
+  initAudioContext();
+
+  if(!ac) return;
+
+  if(ac.state==='suspended'){
+    ac.resume();
+  }
+
+  if(!on){
+
+    on=true;
+
+    play();
+
+    muteBtn.textContent='Music: on';
+  }
+}
+
+
+function setMusic(v){
+
+  initAudioContext();
+
+  if(!ac) return;
+
+  if(v){
+
+    if(ac.state==='suspended'){
+      ac.resume();
+    }
+
+    on=true;
+    play();
+
+  }else{
+
+    on=false;
+
+    clearTimeout(timer);
+
+    if(ac.state==='running'){
+      ac.suspend();
+    }
+  }
+
+  muteBtn.textContent=
+    'Music: '+(v?'on':'off');
+}
+
+
+muteBtn.onclick=function(){
+  setMusic(!on);
+};
+
+
+/*
+  Attempt immediate autoplay when website opens.
+  Browsers may block audio until user interaction.
+*/
+window.addEventListener('load',function(){
+
+  startMusic();
+
+});
+
+
+/*
+  If autoplay is blocked,
+  first click/touch/keypress starts music.
+*/
+['click','touchstart','keydown'].forEach(function(evt){
+
+  window.addEventListener(evt,function(){
+
+    if(!on){
+      startMusic();
+    }
+
+  });
+});
+
+
+/* =========================
+   MOTIVATIONAL QUOTES
+========================= */
+
+var Q=[
+  "Believe in yourself. You are stronger than you think. 💪✨",
+  "Small steps every day still take you far. 🌱🚶‍♀️✨",
+  "Your dreams are valid. Keep going. 🌟💖",
+  "Be proud of how far you have come. 🫶🌸",
+  "Good things are coming your way. Stay patient. 🌈✨",
+  "You are enough, exactly as you are. 💕🌷"
+];
+
+var qi=0;
+
+document.getElementById('more').onclick=function(){
+
+  qi=(qi+1)%Q.length;
+
+  document.getElementById('quote').textContent=
+    Q[qi];
+};
+
+
+/* =========================
+   BIRTHDAY BLAST
+========================= */
+
+var blast=document.getElementById('birthdayBlast');
+var blastMessage=document.getElementById('blastMessage');
+
+var blastEmojis=[
+  '🎊',
+  '🎈',
+  '💖',
+  '🎂',
+  '✨',
+  '⭐',
+  '🎁',
+  '🎉',
+  '🥳',
+  '💫',
+  '❤️'
+];
+
+function birthdayBlast(){
+
+  blast.innerHTML='';
+
+  var message=document.createElement('div');
+
+  message.className='blastMessage';
+  message.id='blastMessage';
+
+  message.textContent=
+    '🎉 Happy Birthday! 🎂';
+
+  blast.appendChild(message);
+
+  /*
+    Create a large mixture of
+    balloons, hearts, cake, stars,
+    gifts and confetti.
+  */
+
+  for(var i=0;i<90;i++){
+
+    var item=document.createElement('div');
+
+    item.className='blastItem';
+
+    item.textContent=
+      blastEmojis[
+        Math.floor(
+          Math.random()*blastEmojis.length
+        )
+      ];
+
+    item.style.left=
+      (50+Math.random()*8-4)+'%';
+
+    item.style.top=
+      (50+Math.random()*8-4)+'%';
+
+    item.style.setProperty(
+      '--x',
+      ((Math.random()-.5)*window.innerWidth*1.25)+'px'
+    );
+
+    item.style.setProperty(
+      '--y',
+      ((Math.random()-.5)*window.innerHeight*1.25)+'px'
+    );
+
+    item.style.setProperty(
+      '--r',
+      ((Math.random()-.5)*720)+'deg'
+    );
+
+    item.style.animationDelay=
+      (Math.random()*.35)+'s';
+
+    blast.appendChild(item);
+  }
+
+  requestAnimationFrame(function(){
+    message.classList.add('show');
+  });
+
+  setTimeout(function(){
+
+    blast.innerHTML='';
+
+  },3200);
+}
+
+
+/* =========================
+   BACKGROUND FALLING EMOJIS
+========================= */
+
+var cv=document.getElementById('c');
+var cx=cv.getContext('2d');
+
+var P=[];
+
+function size(){
+
+  cv.width=innerWidth;
+  cv.height=innerHeight;
+}
+
+size();
+
+addEventListener('resize',size);
+
+
+var bgEmojis=[];
+
+var emojiList=[
+  '🎈',
+  '✨',
+  '💖',
+  '🎂',
+  '⭐',
+  '🎁',
+  '🎉',
+  '🥳',
+  '💫',
+  '❤️'
+];
+
+
+for(var i=0;i<45;i++){
+
+  bgEmojis.push({
+
+    x:Math.random()*innerWidth,
+
+    y:Math.random()*innerHeight-innerHeight,
+
+    vy:Math.random()*2.5+1.5,
+
+    vx:(Math.random()-.5)*1.2,
+
+    size:Math.random()*16+14,
+
+    emoji:
+      emojiList[
+        Math.floor(
+          Math.random()*emojiList.length
+        )
+      ]
+  });
+}
+
+
+function burst(){
+
+  var cols=[
+    '#ff6fa0',
+    '#f5b942',
+    '#b78cff',
+    '#ffffff'
+  ];
+
+  for(var i=0;i<110;i++){
+
+    P.push({
+
+      x:Math.random()*innerWidth,
+
+      y:-10,
+
+      vx:(Math.random()-.5)*3,
+
+      vy:Math.random()*3+1,
+
+      c:cols[i%4],
+
+      s:6+Math.random()*5,
+
+      l:200+Math.random()*80
+    });
+  }
+}
+
+
+function tick(){
+
+  cx.clearRect(
+    0,
+    0,
+    cv.width,
+    cv.height
+  );
+
+
+  bgEmojis.forEach(function(p){
+
+    p.y+=p.vy;
+    p.x+=p.vx;
+
+    if(p.y>innerHeight+20){
+
+      p.y=-30;
+      p.x=Math.random()*innerWidth;
+    }
+
+    cx.font=p.size+'px sans-serif';
+
+    cx.fillText(
+      p.emoji,
+      p.x,
+      p.y
+    );
+  });
+
+
+  P=P.filter(function(p){
+    return p.l-->0;
+  });
+
+
+  P.forEach(function(p){
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+
+    cx.fillStyle=p.c;
+
+    cx.fillRect(
+      p.x,
+      p.y,
+      p.s,
+      p.s
+    );
+  });
+
+
+  requestAnimationFrame(tick);
+}
+
+
+tick();
+
+
+})();
+</script>
+
+</body>
+</html>
+```
